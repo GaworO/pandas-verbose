@@ -25,18 +25,18 @@ class VerboseAccessor:
         # For usage in the verbose string
         self.dataType = "DataFrame"
         # Calculate the number of rows and columns that have been added / dropped.
-        rowChange = _previousShape[0]-_newShape[0]
-        columnChange = _previousShape[1]-_newShape[1]
+        rowChange = _newShape[0]-_previousShape[0]
+        columnChange = _newShape[1]-_previousShape[1]
         ## String concatenation
-        print("\n{:20} {:7} {}{:^5d}{} rows and {:7} {}{:^5d}{} columns.\n".format(
+        print("{:20} {:7} {}{:^5d}{} rows and {:7} {}{:^5d}{} columns.".format(
             self.dataType + "." + functionName + '()',
-            "dropped" if rowChange > 0 else "added",
-            "" if rowChange == 0 or not colored else self.STYLE_RED if rowChange > 0 else self.STYLE_GREEN, # color codes
-            rowChange,
+            "dropped" if rowChange < 0 else "added",
+            "" if rowChange == 0 or not colored else self.STYLE_RED if rowChange < 0 else self.STYLE_GREEN, # color codes
+            abs(rowChange),
             self.STYLE_END, # color reset
-            "dropped" if columnChange > 0 else "added",
-            "" if columnChange == 0 or not colored else self.STYLE_RED if columnChange > 0 else self.STYLE_GREEN, # color codes
-            columnChange,
+            "dropped" if columnChange < 0 else "added",
+            "" if columnChange == 0 or not colored else self.STYLE_RED if columnChange < 0 else self.STYLE_GREEN, # color codes
+            abs(columnChange),
             self.STYLE_END # color reset
             )
         )
@@ -82,14 +82,28 @@ class VerboseAccessor:
             return self._obj
         else:
             return res
+    
+    # Extension of pandas' DataFrame.join() method. See pandas' docs for more information.
+    def join(self, other, on=None, how='left', lsuffix='', rsuffix='', sort=False, colored=False):
+        # get unaltered shape before execution
+        _previousShape = self._obj.shape
+        # execute actual DataFrame method which is pd.DataFrame.join(...)
+        res = self._obj.join(other, on, how, lsuffix, rsuffix, sort)
+        # DataFrame.join() always returns a new DataFrame object
+        _newShape = res.shape
+        # print verbose output information about the executed function
+        self.generateVerboseString("join", _previousShape, _newShape, colored)
+        # return result of original DataFrame.drop() method
+        return res
 
 
 ### TEST ###
 df = pd.DataFrame(np.array([[1, 2, 3, np.nan], [4, 5, 6, np.nan], [
                   7, 8, 9, np.nan]]), columns=['a', 'b', 'c', 'd'])
-df["e"] = np.nan
+df2 = pd.DataFrame(np.array([[1, 2, 3, np.nan], [4, 5, 6, np.nan], [
+                  7, 8, 9, np.nan]]), columns=['a', 'b', 'c', 'd'], index=[0,0,0])
 display(df.head())
-df.verbose.drop(columns=["e", "a"], inplace=True, colored=True)
-#print(type(df))
-#df.verbose.drop(columns=["a", "b"], inplace=True)
-print(df.head())
+#df.verbose.drop(columns=["e", "a"], inplace=True, colored=True)
+df.verbose.drop(columns=["a", "b"], inplace=True, colored=True)
+df = df.verbose.join(df2, lsuffix="_l", colored=True)
+display(df.head())
