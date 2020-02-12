@@ -20,6 +20,9 @@ Just use `df.verbose.someFunction()` instead of `df.someFunction()`. This suppor
  - [x] `dropna()`
  - [x] `drop()`
  - [x] `join()`
+ - [ ] `drop_duplicates()`
+ - [ ] `append()`
+ - [ ] `aggregate()` / `agg()`
  - [ ] `pd.createDummies()`
 
 ### Series
@@ -27,5 +30,9 @@ Just use `s.verbose.someFunction()` instead of `s.someFunction()`. This supports
 
 *Supported methods:*
 
- - [ ] `dropna()`
+ - [x] `dropna()`
  - [ ] `drop()`
+ - [ ] `append()`
+ - [ ] `drop_duplicates()`
+ - [ ] `aggregate()` / `agg()` (potentially)
+
