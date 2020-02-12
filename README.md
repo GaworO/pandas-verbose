@@ -18,7 +18,7 @@ Just use `df.verbose.someFunction()` instead of `df.someFunction()`. This suppor
 *Supported methods:*
 
  - [x] `dropna()`
- - [ ] `drop()`
+ - [x] `drop()`
  - [ ] `join()`
  - [ ] `pd.createDummies()`
 
