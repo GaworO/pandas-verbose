@@ -63,23 +63,33 @@ class VerboseAccessor:
             return res
 
     # Extension of pandas' DataFrame.drop() method. See pandas' docs for more information.
-    def drop(self, *args, colored=False, **kwargs):
+    def drop(self, labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors='raise', colored=False):
         # get unaltered shape before execution
         _previousShape = self._obj.shape
         # execute actual DataFrame method which is pd.DataFrame.drop(...)
-        res = self._obj.drop(*args, **kwargs)
-        _newShape = res.shape
-        # print information about the executed function, mainly, which datatype the object had and if row / colum count changed.
+        res = self._obj.drop(labels, axis, index, columns, level, inplace, errors)
+        # Determine the new object to asses the count of changed rows / columns with, this varies according to the 'inplace' parameter
+        # and thus makes the otherwise perfectly fit usage of (*args, **kwargs) impractical
+        if inplace:
+            _newShape = self._obj.shape
+        else:
+            _newShape = res.shape
+        # print verbose output information about the executed function
         self.generateVerboseString("drop", _previousShape, _newShape, colored)
         # return result of original DataFrame.drop() method
-        return res
+        # this actually fixes a pandas usability issue where using df2 = df.someFunc(inplace=True) returns in df2 having NoneType
+        if inplace:
+            return self._obj
+        else:
+            return res
 
 
 ### TEST ###
 df = pd.DataFrame(np.array([[1, 2, 3, np.nan], [4, 5, 6, np.nan], [
                   7, 8, 9, np.nan]]), columns=['a', 'b', 'c', 'd'])
-print(df.head())
-df = df.verbose.dropna(colored=True, axis=1, inplace=False)
+df["e"] = np.nan
+display(df.head())
+df.verbose.drop(columns=["e", "a"], inplace=True, colored=True)
 #print(type(df))
 #df.verbose.drop(columns=["a", "b"], inplace=True)
 print(df.head())
