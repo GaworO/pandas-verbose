@@ -19,7 +19,7 @@ Just use `df.verbose.someFunction()` instead of `df.someFunction()`. This suppor
 
  - [x] `dropna()`
  - [x] `drop()`
- - [ ] `join()`
+ - [x] `join()`
  - [ ] `pd.createDummies()`
 
 ### Series
